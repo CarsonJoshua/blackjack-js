@@ -109,10 +109,9 @@
         player_total = 0;
         dealer_total = 0;
 
-        dealCard(document.getElementById("player-hand"));
-        dealCard(document.getElementById("player-hand"));
-        dealCard(document.getElementById("dealer-hand"));
-        dealCard(document.getElementById("dealer-hand"));
+        dealCardPlayer();
+        dealCardPlayer();
+        dealCardDealer();
 
 
         document.getElementById("hit").disable = false;
@@ -120,24 +119,71 @@
         document.getElementById("deal").disable = true;
     }
 
-    function dealCard(p){
+    function dealCardPlayer(){
         const image = document.createElement('img');
         let r;
         do{
             r=Math.floor(Math.random()*52);
-        }while(cards_used.contains(r))
+        }while(contains(cards_used, r))
         cards_used.push(r);
         image.src=cards[r];
         image.alt=cards[r];
-        p.appendChild(image);
-
+        document.getElementById("player-hand").appendChild(image);
+        player_total += Math.min((r%13)+1, 10);
     }
+    function contains(arr, e){
+        for(let i = 0; i < arr.length; i++){
+            if(arr[i]==e){
+                return true;
+            }
+        }
+        return false;
+    }
+    function dealCardDealer(){
+        const image = document.createElement('img');
+        let r;
+        do{
+            r=Math.floor(Math.random()*52);
+        }while(contains(cards_used, r))
+        cards_used.push(r);
+        image.src=cards[r];
+        image.alt=cards[r];
+        document.getElementById("dealer-hand").appendChild(image);
+        dealer_total += Math.min((r%13)+1, 10);
+    }
+
 
     function hit(){
-        dealCard(document.getElementById("player-hand"))
+        dealCardPlayer();
+        if(player_total>21)
+            document.getElementById("hit").disabled = true;
     }
     function stand(){
+        do{
+            dealCardDealer();
+        }while(dealer_total<17)
+        if(player_total>21){
+            lose();
+            return;
+        }
+        if(dealer_total>21||player_total>dealer_total){
+            win();
+            return;
+        }
+        lose();
+    }
+    function lose(){
 
+        reset();
+    }
+    function win(){
+
+        reset();
+    }
+    function reset(){
+        document.getElementById("hit").disable = true;
+        document.getElementById("stand").disable = true;
+        document.getElementById("deal").disable = false;
     }
     function exit(){
         window.close();
