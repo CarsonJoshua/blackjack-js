@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BlackJack</title>
+</head>
+<style>
+
+    .panel{
+        box-sizing: border-box;
+        border: 3px solid black;
+        display: flex;
+        height:600px;
+    }
+    .left-panel{
+        width:20%;
+        background: darkgray;
+    }
+    .right-panel{
+        width: 80%;
+        background-color:darkgreen;
+    }
+    button{
+        height:20px;
+    }
+    img{
+        max-width: 15%;
+        height: auto;
+    }
+</style>
+<body>
+<div class="panel">
+    <div class="left-panel">
+        <div>
+            <button id="deal" onclick="deal()">
+                Deal
+            </button>
+        </div>
+        <div>
+            <button id="hit" onclick="hit()" disabled>
+                Hit
+            </button>
+        </div>
+        <div>
+            <button id="stand" onclick="stand()" disabled>
+                Stand
+            </button>
+        </div>
+        <div>
+            <button id="exit" onclick="exit()">
+                Exit
+            </button>
+        </div>
+    </div>
+    <div class="right-panel">
+        <div>
+            <p>Dealer's hand is:</p>
+            <div id="dealer-hand">
+                <img id="dealer-1" src="card_pngs/card-back.png">
+                <img id="dealer-2" src="card_pngs/card-back.png">
+            </div>
+        </div>
+        <div>
+            <p>Your hand is:</p>
+            <div id="player-hand">
+                <img id="player-1" src="card_pngs/black_joker.png">
+                <img id="player-2" src="card_pngs/red_joker.png">
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    let cards = [];
+    /*populate cards*/
+    for(let i=0;i<4;i++){
+        let suit ="";
+        switch (i){
+            case 0:
+                suit="clubs";
+                break;
+            case 1:
+                suit="diamonds";
+                break;
+            case 2:
+                suit="hearts";
+                break;
+            case 3:
+                suit="spades";
+                break;
+            default:
+            /*figure out how to throw error*/
+        }
+        cards.push("ace_of_"+suit+".png");
+        for(let j=0;j<9;j++){
+            cards.push((j+2)+"_of_"+suit+".png");
+        }
+        cards.push("jack_of_"+suit+".png");
+        cards.push("queen_of_"+suit+".png");
+        cards.push("king_of_"+suit+".png");
+    }
+
+    let cards_used = []
+    let player_total = 0;
+    let dealer_total = 0;
+    function deal(){
+        cards_used=[];
+        player_total = 0;
+        dealer_total = 0;
+
+        dealCard(document.getElementById("player-hand"));
+        dealCard(document.getElementById("player-hand"));
+        dealCard(document.getElementById("dealer-hand"));
+        dealCard(document.getElementById("dealer-hand"));
+
+
+        document.getElementById("hit").disable = false;
+        document.getElementById("stand").disable = false;
+        document.getElementById("deal").disable = true;
+    }
+
+    function dealCard(p){
+        const image = document.createElement('img');
+        let r;
+        do{
+            r=Math.floor(Math.random()*52);
+        }while(cards_used.contains(r))
+        cards_used.push(r);
+        image.src=cards[r];
+        image.alt=cards[r];
+        p.appendChild(image);
+
+    }
+
+    function hit(){
+        dealCard(document.getElementById("player-hand"))
+    }
+    function stand(){
+
+    }
+    function exit(){
+        window.close();
+    }
+</script>
+</html>
