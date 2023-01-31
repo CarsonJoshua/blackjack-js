@@ -11,6 +11,7 @@
         border: 3px solid black;
         display: flex;
         height:600px;
+        postion:relative;
     }
     .left-panel{
         width:20%;
@@ -26,9 +27,21 @@
     img{
         max-width: 15%;
         height: auto;
+        display:inline-block;
+    }
+    .container{
+        position:relative;
+    }
+    h1.winlose{
+        position: absolute;
+        top:30%;
+        left:20%;
+        font-size: 100px;
+        visibility: hidden;
     }
 </style>
 <body>
+<div class="container">
 <div class="panel">
     <div class="left-panel">
         <div>
@@ -69,7 +82,9 @@
         </div>
     </div>
 </div>
-
+<h1 class="winlose" id="win">Winner</h1>
+<h1 class="winlose" id="lose">Loser</h1>
+</div>
 </body>
 <script>
     let cards = [];
@@ -92,34 +107,63 @@
             default:
             /*figure out how to throw error*/
         }
-        cards.push("ace_of_"+suit+".png");
+        cards.push("card_pngs/"+"ace_of_"+suit+".png");
         for(let j=0;j<9;j++){
-            cards.push((j+2)+"_of_"+suit+".png");
+            cards.push("card_pngs/"+(j+2)+"_of_"+suit+".png");
         }
-        cards.push("jack_of_"+suit+".png");
-        cards.push("queen_of_"+suit+".png");
-        cards.push("king_of_"+suit+".png");
+        cards.push("card_pngs/"+"jack_of_"+suit+".png");
+        cards.push("card_pngs/"+"queen_of_"+suit+".png");
+        cards.push("card_pngs/"+"king_of_"+suit+".png");
     }
 
     let cards_used = []
     let player_total = 0;
     let dealer_total = 0;
+    let player_aces = 0;
+    let dealer_aces = 0;
+
+    reset();
     function deal(){
+        document.getElementById("win").style.visibility="hidden";
+        document.getElementById("lose").style.visibility="hidden";
+
+        // console.log(document.getElementById("player-hand").children);
+        {
+            let p=document.getElementById("player-hand");
+            while(p.lastElementChild){
+                p.removeChild(p.lastElementChild);
+            }
+            p=document.getElementById("dealer-hand");
+            while(p.lastElementChild){
+                p.removeChild(p.lastElementChild);
+            }
+        }
+
         cards_used=[];
         player_total = 0;
         dealer_total = 0;
+        player_aces = 0;
+        dealer_aces = 0;
 
         dealCardPlayer();
         dealCardPlayer();
         dealCardDealer();
+        dealSecret();
 
 
-        document.getElementById("hit").disable = false;
-        document.getElementById("stand").disable = false;
-        document.getElementById("deal").disable = true;
+        document.getElementById("hit").disabled = false;
+        document.getElementById("stand").disabled = false;
+        document.getElementById("deal").disabled = true;
+    }
+    function dealSecret(){
+        const image = document.createElement('img');
+        image.id="secret";
+        image.src="card_pngs/card-back.png";
+        image.alt="card_back";
+        document.getElementById("dealer-hand").appendChild(image);
     }
 
-    function dealCardPlayer(){
+    function dealCard(p){
         const image = document.createElement('img');
         let r;
         do{
@@ -128,8 +172,24 @@
         cards_used.push(r);
         image.src=cards[r];
         image.alt=cards[r];
-        document.getElementById("player-hand").appendChild(image);
-        player_total += Math.min((r%13)+1, 10);
+        p.appendChild(image);
+        return Math.min((r%13)+1, 10);
+    }
+
+
+    function dealCardPlayer(){
+        let n = dealCard(document.getElementById("player-hand"));
+        player_total += n;
+        // const image = document.createElement('img');
+        // let r;
+        // do{
+        //     r=Math.floor(Math.random()*52);
+        // }while(contains(cards_used, r))
+        // cards_used.push(r);
+        // image.src=cards[r];
+        // image.alt=cards[r];
+        // document.getElementById("player-hand").appendChild(image);
+        // player_total += Math.min((r%13)+1, 10);
     }
     function contains(arr, e){
         for(let i = 0; i < arr.length; i++){
@@ -159,6 +219,7 @@
             document.getElementById("hit").disabled = true;
     }
     function stand(){
+        document.getElementById("secret").remove();
         do{
             dealCardDealer();
         }while(dealer_total<17)
@@ -173,17 +234,17 @@
         lose();
     }
     function lose(){
-
+        document.getElementById("lose").style.visibility="visible";
         reset();
     }
     function win(){
-
+        document.getElementById("win").style.visibility="visible";
         reset();
     }
     function reset(){
-        document.getElementById("hit").disable = true;
-        document.getElementById("stand").disable = true;
-        document.getElementById("deal").disable = false;
+        document.getElementById("hit").disabled = true;
+        document.getElementById("stand").disabled = true;
+        document.getElementById("deal").disabled = false;
     }
     function exit(){
         window.close();
