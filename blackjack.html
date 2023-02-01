@@ -147,7 +147,7 @@
         removeHand(player);
         removeHand(dealer);
 
-        cards_used=[];
+        // cards_used=[];
         player.total = 0;
         dealer.total = 0;
         player.aces = 0;
@@ -191,6 +191,23 @@
     }
 
     function dealCard(p){
+        //shuffles if deck exhausted
+        if (cards_used.length==cards.length){
+            console.log("shuffle");
+            cards_used = [];
+            //adds card in play to cards used
+            for(let h in [player.hand, dealer.hand]){
+                let cards_in_hand = [];
+                while(h.firstElementChild){
+                    cards_in_hand.push(h.firstElementChild);
+                    cards_used.push(h.firstElementChild.src);
+                    h.removeChild(h.firstElementChild);
+                }
+                for(let c in cards_in_hand){
+                    h.appendChild(c);
+                }
+            }
+        }
         const image = document.createElement('img');
         let r;
         do{
